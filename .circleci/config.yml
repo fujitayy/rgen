@@ -1,0 +1,54 @@
+version: 2
+jobs:
+  test-stable:
+    docker:
+      - image: circleci/rust
+    steps:
+      - checkout
+      - run:
+          name: Current Directory
+          command: pwd
+      - run:
+          name: Changed Files
+          command: git diff --stat HEAD^ HEAD
+      - run:
+          name: Rust version
+          command: rustc --version
+      - run:
+          name: Rust toolchain
+          command: rustup toolchain list
+      - run:
+          name: ~/.cargo/config
+          command: 'cat ~/.cargo/config || :'
+      - run:
+          name: Test
+          command: cargo test
+  test-stable-musl:
+    docker:
+      - image: clux/muslrust:stable
+    steps:
+      - checkout
+      - run:
+          name: Current Directory
+          command: pwd
+      - run:
+          name: Changed Files
+          command: git diff --stat HEAD^ HEAD
+      - run:
+          name: Rust version
+          command: rustc --version
+      - run:
+          name: Rust toolchain
+          command: rustup toolchain list
+      - run:
+          name: ~/.cargo/config
+          command: 'cat ~/.cargo/config || :'
+      - run:
+          name: Build
+          command: cargo build
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-stable
+      - test-stable-musl
